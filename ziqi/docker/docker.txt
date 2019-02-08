@@ -1,0 +1,47 @@
+docker
+	安装
+		https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce
+		sudo usermod -aG docker isaac
+		sudo service docker start
+		docker run hello-world
+		加速
+			国内服务器
+				/etc/docker/daemon.json
+					{"registry-mirrors": ["http://hub-mirror.c.163.com"]}
+			设http/https代理可以快到飞起
+	搭私有仓库
+		registry
+		http://dockone.io/article/2515
+	使用
+		ps
+			查看已在运行的
+		stop
+		pull
+		run
+			-d
+				daemon
+			-P
+				随机端口映射
+			-p
+				指定端口映射
+				port_host:port_docker
+			-w
+				指定工作目录
+			-e
+				设置环境变量
+					docker run -e ENV1="ooxxooxx" -e ENV2="????"
+		port
+			查看指定容器的端口映射
+		logs
+			查看日志
+		exec
+			让运行中的container执行命令
+			连接到内部控制台
+				sudo docker exec -it 775c7c9ee1e1 /bin/bash
+	管理
+		portainer
+		https://portainer.readthedocs.io/en/latest/deployment.html
+	dockerfile
+	CV
+		nvidia
+			https://github.com/NVIDIA/nvidia-docker
