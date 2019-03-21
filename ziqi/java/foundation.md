@@ -1,4 +1,4 @@
-## 主要的参考链接
+# 主要的参考链接
 
 [github](https://github.com/Snailclimb/JavaGuide/tree/master/Java%E7%9B%B8%E5%85%B3)
 
@@ -12,17 +12,57 @@
 
 [HashMap, HashTable, ConcurrentHashMap](http://www.yuanrengu.com/index.php/2017-01-17.html)
 
-[private static 有助于内敛优化。内敛优化是通过将被调用的函数复制到调用方函数内来减少函数调用的资源消耗](https://www.toutiao.com/a6530421233337500164/?tt_from=weixin&utm_campaign=client_share&timestamp=1520505006&app=news_article&utm_source=weixin&iid=27056549301&utm_medium=toutiao_ios&wxshare_count=1)
-
 # 多线程
+[良心的多线程套餐](https://blog.csdn.net/qq_34337272/article/details/79640870)
 [中断](https://blog.csdn.net/canot/article/details/51087772)
 
 [掘金java多线程](https://juejin.im/entry/58f1d35744d904006cf14b17)
 
+### <font color="00ffff">等待/通知机制 </font>
 
+<font color="red">生产和消费者关系</font>：第一个线程（生产者）做相应的操作然后第二个线程（消费者）感知到了变化又进行相应的操作
+
+会有一个问题：如果轮询时间的间隔太小会浪费CPU资源，轮询时间的间隔太大，就可能取不到自己想要的数据。所以用等待/通知（wait/notify）机制来解决这两个矛盾。
+
+synchronized关键字可以将任何一个Object对象作为同步对象来看待，而Java为每个Object都实现了等待/通知（wait/notify）机制的相关方法，它们必须用在synchronized关键字同步的Object的临界区内。通过调用wait()方法可以使处于临界区内的线程进入等待状态，同时<font color="red">释放</font>被同步对象的锁。而notify()方法可以唤醒一个因调用wait操作而处于阻塞状态中的线程，使其进入就绪状态。<font color="red">被重新唤醒的线程会视图重新获得临界区的控制权也就是锁</font>，并继续执行wait方法之后的代码。如果发出notify操作时没有处于阻塞状态中的线程，那么该命令会被忽略。
+
+在没有同步锁的情况下：
+* 一个生产者判断条件，比如发现buffer满了，需要等待
+
+* 同时消费者消费，改变了条件
+
+* 消费者要通知生产者条件发生了改变，但是这个时候生产者线程还没有在等待的状态，所以通知不到它
+
+* 之后生产者不知道条件已经改变进入了等待的状态，可能之后就一直收不到通知了
+
+
+
+
+
+# JVM
 Boolean类型在编译后在JVM中是int类型，一般是1个字节大小
 
-## 包的作用
+
+
+
+# 若干道面试题
+
+## Java 基础
+### <font color=#00ffff>方法内联</font>
+方法内联就是把被调用方函数代码"复制"到调用方函数中，来减少因函数调用开销的技术。
+
+但是一个方法就算被JVM标注成为热点方法，JVM仍然不一定会对它做方法内联优化。其中有个比较常见的原因就是这个方法体太大了，分为两种情况。
+
+* 如果方法是经常执行的，默认情况下，方法大小小于325字节的都会进行内联（可以通过** -XX:MaxFreqInlineSize=N**来设置这个大小）
+
+* 如果方法不是经常执行的，默认情况下，方法大小小于35字节才会进行内联（可以通过** -XX:MaxInlineSize=N **来设置这个大小）
+
+我们可以通过增加这个大小，以便更多的方法可以进行内联；但是除非能够显著提升性能，否则不推荐修改这个参数。因为更大的方法体会导致代码内存占用更多，更少的热点方法会被缓存，最终的效果不一定好。
+
+[private static 有助于内敛优化。内敛优化是通过将被调用的函数复制到调用方函数内来减少函数调用的资源消耗](https://www.toutiao.com/a6530421233337500164/?tt_from=weixin&utm_campaign=client_share&timestamp=1520505006&app=news_article&utm_source=weixin&iid=27056549301&utm_medium=toutiao_ios&wxshare_count=1)
+### <font color=#00ffff>Class.forName</font>
+[为什么要使用；它的作用；new和newInstance的对比](http://www.cnblogs.com/springcsc/archive/2010/03/03/1676977.html)
+### <font color=#00ffff>包的作用</font>
 protected 在包内可以访问，如果不是同一个包，子类可以访问父类的方法，但不能访问父类实例的方法
 
 1. 把功能相似或相关的类或接口组织在同一个包中，方便类的查找和使用。
@@ -37,29 +77,6 @@ Java 使用包（package）这种机制是为了防止命名冲突，访问控�
 ```java
 package pkg1[．pkg2[．pkg3…]];
 ```
-
-[接口只有一个实现类的注入方式](https://www.jianshu.com/p/3942cce05f71
-)
-
-@Service，@Autowired
-
-[接口由多个实现类的注入方式](
-https://blog.csdn.net/u010476994/article/details/80986435)
-
-```java
-@Service(xx)
-class yy implements zz
-@Resource(name=xx),
-or @Qualifier(yy)
-```
-
-## 怎么防止重写
-
-[3 Ways to Prevent Method Overriding in Java - Private, Static and Final](https://javarevisited.blogspot.com/2015/04/3-ways-to-prevent-method-overriding-in.html)f
-
-# 若干道面试题
-
-## Java 基础
 
 ### <font color=#00ffff>JDK 和 JRE 有什么区别？</font>
 JDK是Java Development Kit，它是功能齐全的Java SDK。它拥有JRE所拥有的一切，还有<font color=#ffff>编译器（javac）</font>和<font color=#ffff>工具</font>（如javadoc和jdb）。它能够创建和编译程序。
@@ -105,7 +122,7 @@ String 中的 equals 方法是被重写过的，因为 object 的 equals 方法�
 
 当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的hashcode，HashSet会假设对象没有重复出现。但是如果发现有相同 hashcode 值的对象，这时会调用 equals（）方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。（摘自我的Java启蒙书《Head first java》第二版）。这样我们就大大减少了 equals 的次数，相应就大大提高了执行速度。
 
-* hashCode（）与equals（）的相关规定
+hashCode（）与equals（）的相关规定
 * 如果两个对象相等，则hashcode一定也是相同的
 * 两个对象相等,对两个对象分别调用equals方法都返回true
 * 两个对象有相同的hashcode值，它们也不一定是相等的
@@ -113,7 +130,12 @@ String 中的 equals 方法是被重写过的，因为 object 的 equals 方法�
 * hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写 hashCode()，则该 class 的两个对象无论如何都不会相等（即使这两个对象指向相同的数据）
 
 ### <font color=#00ffff> final 在 java 中有什么作用？</font>
+[关于 final 关键字的一些总结](https://github.com/Snailclimb/JavaGuide/blob/master/Java/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md#31-%E5%85%B3%E4%BA%8E-final-%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%BB%E7%BB%93)
+final关键字主要用在三个地方：变量、方法、类。
 
+* 对于一个final变量，如果是基本数据类型的变量，则其数值一旦在初始化之后便不能更改；如果是引用类型的变量，则在对其初始化之后便不能再让其指向另一个对象。
+* 当用final修饰一个类时，表明这个类不能被继承。final类中的所有成员方法都会被隐式地指定为final方法。
+* 使用final方法的原因有两个。第一个原因是把方法锁定，以防任何继承类修改它的含义；第二个原因是效率。在早期的Java实现版本中，会将final方法转为内嵌调用。但是如果方法过于庞大，可能看不到内嵌调用带来的任何性能提升（现在的Java版本已经不需要使用final方法进行这些优化了）。类中所有的private方法都隐式地指定为final。
 ### <font color=#00ffff>java 中的 Math.round(-1.5) 等于多少？</font>
 -1
 round(1.5) = 2
@@ -171,10 +193,67 @@ public class TestReverse {
 * 父类方法为抽象方法时，子类必须重写（实现）所有父类的<font color=#ffff>抽象</font>方法；如果子类没有实现父类的抽象方法，则必须将子类也定义为为abstract类。
 * 父类方法为普通方法时，子类可以重写父类方法，也可以不重写。
 
-
+### <font color=#00ffff> 静态特点 </font>
+* 全局唯一，任何一次的修改都是全局性的影响
+* 只加载一次，优先于非静态
+* 使用方式上不依赖于实例对象。
+* 生命周期属于类级别，从JVM 加载开始到JVM卸载结束。
 ### <font color=#00ffff> 抽象类能使用 final 修饰吗? </font>
-不能，抽象类不是不可变的
-[关于 final 关键字的一些总结](https://github.com/Snailclimb/JavaGuide/blob/master/Java/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md#31-%E5%85%B3%E4%BA%8E-final-%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%BB%E7%BB%93)
+不能，抽象类不是不可变的，是需要被继承的
+
+### <font color=#00ffff> 静态内部类与非静态内部类</font>
+
+* 内部静态类不需要有指向外部类的引用。但非静态内部类需要持有对外部类的引用。
+
+* 非静态内部类能够访问外部类的静态和非静态成员。静态类不能访问外部类的非静态成员。他只能访问外部类的静态成员。
+
+* 一个非静态内部类不能脱离外部类实体被创建，一个非静态内部类可以访问外部类的数据和方法，因为他就在外部类里面。
+
+```java
+/* 下面程序演示如何在java中创建静态内部类和非静态内部类 */
+class OuterClass{
+  private static String msg = "GeeksForGeeks";
+  // 静态内部类
+  public static class NestedStaticClass{
+    // 静态内部类只能访问外部类的静态成员
+    public void printMessage() {
+     // 试着将msg改成非静态的，这将导致编译错误 
+     System.out.println("Message from nested static class: " + msg); 
+    }
+  }
+  // 非静态内部类
+  public class InnerClass{
+    // 不管是静态方法还是非静态方法都可以在非静态内部类中访问
+    public void display(){
+     System.out.println("Message from non-static nested class: "+ msg);
+    }
+  }
+} 
+class Main
+{
+  // 怎么创建静态内部类和非静态内部类的实例
+  public static void main(String args[]){
+    // 创建静态内部类的实例
+    OuterClass.NestedStaticClass printer = new OuterClass.NestedStaticClass();
+    // 创建静态内部类的非静态方法
+    printer.printMessage();  
+
+    // 为了创建非静态内部类，我们需要外部类的实例
+    OuterClass outer = new OuterClass();    
+    OuterClass.InnerClass inner = outer.new InnerClass();／／这样new出来的
+    // 调用非静态内部类的非静态方法
+    inner.display();
+    // 我们也可以结合以上步骤，一步创建的内部类实例
+    OuterClass.InnerClass innerObject = new OuterClass().new InnerClass();
+    // 同样我们现在可以调用内部类方法
+    innerObject.display();
+  }
+}
+
+ 
+// 其实就是静态类不用先创建外部类。可以静态类看做外部类的静态变量，使用就不要外部类实例；而非静态就必须先实例化。
+```
+
 ### <font color=#00ffff> 接口和抽象类有什么区别？ </font>
 [Refer to ...](https://github.com/Snailclimb/JavaGuide/blob/master/Java/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md#17-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88)
 
@@ -186,6 +265,76 @@ public class TestReverse {
 * 抽象类实现某个接口，可以不实现所有接口的方法，可以由它的子类实现。而普通类即非抽象类则必须实现接口里的全部方法。
 
 <font color=#ff0000>备注:在JDK8中，接口也可以定义静态方法，可以直接用接口名调用。实现类和实现是不可以调用的。如果同时实现两个接口，接口中定义了一样的默认方法，必须重写，不然会报错。</font>
+
+### <font color=#00ffff>怎么防止重写</font>
+
+[3 Ways to Prevent Method Overriding in Java - Private, Static and Final](https://javarevisited.blogspot.com/2015/04/3-ways-to-prevent-method-overriding-in.html)
+
+static private final 都可以用来防止重写。如果在子类中重写父类的static、private方法，不会报错，但是在调用的时候会调用到父类的方法。final是最好的防止重写的方法，它直接告诉鳄梨programmer，这个方法是不可以被重写的，但是在这个类内是可以读的（readability advantage）
+
+用了private，隐含了可以在子类中隐藏这些方法。在子类中“重写”的操作被称为“hidden method”。对它的调用在编译时被解析；而调用被重写的方法，在运行时解析
+
+static也是在编译时被解析和绑定的；但是重写是在运行时被解析的
+
+<font color="red">We can not override private method in Java, just like we can not override static method in Java. Like static methods, private method in Java is also bonded during compile time using static binding by Type information and doesn't depends on what kind of object a particular reference variable is holding. Since method overriding works on dynamic binding, its not possible to override private method in Java. private methods are not even visible to Child class, they are only visible and accessible in the class on which they are declared. private keyword provides highest level of Encapsulation in Java. Though you can hide private method in Java by declaring another private method with same name and different method signature.</font>
+
+```java
+public class PrivateMethodCanNotBeOverriden{
+  
+    public static void main(String args[]) {
+        //shows that private method can not be overridden in Java     
+        Parent parent = new Child();
+    }
+  
+  
+}
+
+class Parent{
+  
+    public Parent(){
+        name();
+        normal();
+    }
+  
+    private void name(){
+        System.out.printf("private method inside Parent class in Java %n");
+    }
+  
+    public void normal(){
+        System.out.println("non private method from Parent class can be overridden");
+    }
+  
+}
+
+class Child extends Parent{
+  
+    /*
+     * Private method can not be overridden in Java, they can only be hidden
+     */
+    private void name(){
+        System.out.printf("private method inside Child class in Java %n");
+    }
+  
+    @Override
+    public void normal(){
+        System.out.println("non private overridden method from Child class ");
+    }
+  
+}
+
+
+// Output
+// private method inside Parent class in Java
+// non private overridden method from Child class
+```
+
+[Read more](http://www.java67.com/2012/08/can-we-override-private-method-in-java.html#ixzz5ikTOX2jR) 
+
+### <font color=#00ffff> 为什么java不支持多继承</font>
+* 钻石问题
+* 设计会很复杂，构造函数链、casting
+    
+cast是造型的意思当一个对象不能直接类型转换。就需要造型。 例如： 一个int型能直接转换为double，就不需要造型。 一个double型不能直接转换为int，就需要造型
 
 ### <font color=#00ffff> java 中 IO 流分为几种？</font>
 
@@ -318,14 +467,42 @@ public class TestReverse {
 ## 异常
 
 ### <font color=#00ffff>throw 和 throws 的区别？</font>
+throw与throws两者都是消极处理异常的方式：抛出或者可能抛出异常，但是不会由函数去处理异常，真正的处理异常由函数的上层调用处理。
+```java
+class Math{
+    public int div(int i,int j) throws Exception{    // 定义除法操作，如果有异常，则交给被调用处处理
+        int temp = i / j ;    // 计算，但是此处有可能出现异常
+        return temp ;
+    }
+};
+public class ThrowsDemo01{
+    public static void main(String args[]){
+        Math m = new Math() ;        
+        try{
+            System.out.println("除法操作：" + m.div(10,2)) ;
+        }catch(Exception e){
+            e.printStackTrace() ;    
+        }
+    }
+};
+public class ThrowsDemo02{
+    // 在主方法中的所有异常都可以不使用try...catch进行处理
+    // 异常会抛给JVM
+    public static void main(String args[]) throws Exception{
+        Math m = new Math() ;        
+            System.out.println("除法操作：" + m.div(10,0)) ;
+    }
+};
+```
+### <font color=#00ffff> final、finally、finalize 有什么区别？</font>
 
-75.final、finally、finalize 有什么区别？
+### <font color=#00ffff> try-catch-finally 中哪个部分可以省略？</font>
 
-76.try-catch-finally 中哪个部分可以省略？
+### <font color=#00ffff> try-catch-finally 中，如果 catch 中 return 了，finally 还会执行吗？ </font>
 
-77.try-catch-finally 中，如果 catch 中 return 了，finally 还会执行吗？
-
-78.常见的异常类有哪些？
+### <font color=#00ffff>常见的异常类有哪些？</font>
+[Java异常类层次结构图
+](https://github.com/Snailclimb/JavaGuide/blob/master/Java/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md#32-java-%E4%B8%AD%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86)
 
 八、网络
 
@@ -353,6 +530,12 @@ public class TestReverse {
 
 89.简单工厂和抽象工厂有什么区别？
 
-十、Spring/Spring MVC
+# Spring/Spring MVC
 
-90.为什么要使用 spring？
+[接口只有一个实现类的注入方式](https://www.jianshu.com/p/3942cce05f71
+)
+
+[接口由多个实现类的注入方式](
+https://blog.csdn.net/u010476994/article/details/80986435)
+
+### <font color=#00ffff>为什么要使用 spring？</font>
