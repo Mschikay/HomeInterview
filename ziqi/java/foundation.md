@@ -13,8 +13,10 @@
 [HashMap, HashTable, ConcurrentHashMap](http://www.yuanrengu.com/index.php/2017-01-17.html)
 
 # 多线程
+[线程状态变迁](https://camo.githubusercontent.com/88ca089de34d29350d6b72ee1b9e9c8f8f8691f2/68747470733a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31392d312d32392f4a6176612532302545372542412542462545372541382538422545372538412542362545362538302538312545352538462539382545382542462538312e706e67)
+
 [良心的多线程套餐](https://blog.csdn.net/qq_34337272/article/details/79640870)
-[中断](https://blog.csdn.net/canot/article/details/51087772)
+
 
 [掘金java多线程](https://juejin.im/entry/58f1d35744d904006cf14b17)
 
@@ -35,8 +37,52 @@ synchronized关键字可以将任何一个Object对象作为同步对象来看�
 
 * 之后生产者不知道条件已经改变进入了等待的状态，可能之后就一直收不到通知了
 
+### <font color="00ffff">同步/异步 阻塞/非阻塞</font>
+[同步/异步，阻塞/非阻塞概念深度解析
+](https://blog.csdn.net/lengxiao1993/article/details/78154467)
+
+同步和异步关注的是<font color="red">消息通信机制</font> (synchronous communication/ asynchronous communication)
+
+同步：就是在发出一个调用时，在没有得到结果之前，该调用就不返回。但是一旦调用返回，就得到返回值了。换句话说，就是由调用者主动等待这个调用的结果。
+异步：相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。
+
+阻塞和非阻塞关注的是程序在<font color="red">等待调用结果（消息，返回值）时的状态</font>.
+
+阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。
+非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。
+
+### <font color="00ffff">守护线程</font>
+<font color="red">Most critical difference: JVM会等待所有用户进程完成再关闭，但不等待守护线程。</font>
+
+守护线程的优先级很低，运行在后台 -they won't get CPU as easily as a user thread can get
+
+一般都是JVM创建的，比如垃圾回收进程。用户在main函数中定义的进程都是user thread，除非用户在start前thread.setDeamon(True);
+
+它不是给critical task用的
+
+守护线程创建的线程也是守护的。有同等优先级
+
+### <font color=#00ffff>中断</font>
+[中断1](https://blog.csdn.net/canot/article/details/51087772)
+[中断2](https://www.cnblogs.com/onlywujun/p/3565082.html)
+
+<font color="red">没有任何语言方面的需求要求一个被中断的程序应该终止。中断一个线程只是为了引起该线程的注意，被中断线程可以决定如何应对中断</font>
 
 
+中断不会真的中断一个线程，但是会改变中断状态, 即Thread.isInterrupted()（中断状态）将返回true
+
+中断一个可取消阻塞状态的被阻塞线程，中断状态会变成true，会抛出异常，因为它已经不占有CPU和时间片了，没有办法将自己的中断状态置位。抛出异常后的线程会离开阻塞状态，并且在抛出异常后立即将线程的中断标示位清除，即重新设置为false。继续运行。抛出异常是为了线程从阻塞状态醒过来，并在结束线程前让程序员有足够的时间来处理中断请求。
+
+
+thread.interrupted()的值。检查中断状态，<font color="red">清除中断状态标志为false</font>的功能
+
+不是所有的阻塞方法收到中断后都可以取消阻塞状态, 输入和输出流类会阻塞等待 I/O 完成，但是它们不抛出InterruptedException，而且在被中断的情况下也不会退出阻塞状态
+
+synchronized在获锁的过程中是不能被中断的，意思是说如果产生了死锁，则不可能被中断。与synchronized功能相似的reentrantLock.lock()方法也是一样，它也不可中断的，即如果发生死锁，那么reentrantLock.lock()方法无法终止，如果调用时被阻塞，则它一直阻塞到它获取到锁为止。但是如果调用带超时的tryLock方法reentrantLock.tryLock(long timeout, TimeUnit unit)，那么如果线程在等待时被中断，将抛出一个InterruptedException异常，这是一个非常有用的特性，因为它允许程序打破死锁。你也可以调用reentrantLock.lockInterruptibly()方法，它就相当于一个超时设为无限的tryLock方法。
+
+
+### <font color=#00ffff>wait sleep</font>
+
 
 
 # JVM
@@ -48,6 +94,7 @@ synchronized关键字可以将任何一个Object对象作为同步对象来看�
 # 若干道面试题
 
 ## Java 基础
+[hashmap存键值过程](https://camo.githubusercontent.com/725bb9953df54438fadb74a1bea180ed817b9e27/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f392f322f313635393862663735386337343765363f773d39393926683d36373926663d706e6726733d3534343836)
 ### <font color=#00ffff>方法内联</font>
 方法内联就是把被调用方函数代码"复制"到调用方函数中，来减少因函数调用开销的技术。
 
